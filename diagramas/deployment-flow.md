@@ -11,7 +11,7 @@ flowchart TD
     
     UpdateSystem --> InstallDeps[📦 Instalar Dependencias]
     
-    subgraph "Instalación de Software"
+    subgraph Installation["📦 Instalación de Software"]
         InstallDeps --> Ruby[💎 Instalar Ruby 3.2]
         Ruby --> Rails[🚂 Instalar Rails 7+]
         Rails --> Node[📗 Instalar Node.js 18]
@@ -54,21 +54,21 @@ sequenceDiagram
 
 ```mermaid
 graph TD
-    subgraph "Configuración del Sistema"
+    subgraph SystemConfig["⚙️ Configuración del Sistema"]
         SystemdService[⚙️ Systemd Service<br/>/etc/systemd/system/pxplus_app.service]
         NginxConfig[🌐 Nginx Config<br/>/etc/nginx/sites-available/pxplus_app]
         EnvFile[🔐 Environment Variables<br/>.env.production]
         LogRotate[📝 Log Rotation<br/>/etc/logrotate.d/pxplus_app]
     end
     
-    subgraph "Aplicación"
+    subgraph AppConfig["📁 Aplicación"]
         AppDir[📁 /home/deploy/pxplus_app/]
         PumaConfig[🐾 Puma Config<br/>config/puma.rb]
         TempFiles[📄 Temp Files<br/>/tmp/pxplus_exchange/]
         BackupDir[💾 Backups<br/>/home/deploy/backups/]
     end
     
-    subgraph "Scripts de Automatización"
+    subgraph Scripts["📜 Scripts de Automatización"]
         DeployScript[🚀 deploy.sh]
         BackupScript[💾 backup.sh]
         CleanupScript[🧹 cleanup.sh]
@@ -87,21 +87,21 @@ graph TD
 
 ```mermaid
 flowchart LR
-    subgraph "Logs del Sistema"
+    subgraph SystemLogs["📝 Logs del Sistema"]
         NginxLogs[🌐 Nginx Logs<br/>/var/log/nginx/]
         RailsLogs[💎 Rails Logs<br/>log/production.log]
         SystemLogs[🖥️ System Logs<br/>/var/log/syslog]
         PxPlusLogs[🏢 PxPlus Logs<br/>Custom location]
     end
     
-    subgraph "Scripts de Monitoreo"
+    subgraph MonitoringScripts["📊 Scripts de Monitoreo"]
         HealthCheck[🏥 Health Check<br/>App status, disk space]
         LogAnalysis[📊 Log Analysis<br/>Error patterns, performance]
         BackupCheck[💾 Backup Verification<br/>Backup integrity]
         SecurityScan[🔒 Security Scan<br/>Failed logins, file access]
     end
     
-    subgraph "Alertas"
+    subgraph Alerts["🚨 Alertas"]
         EmailAlert[📧 Email Alerts]
         LogAlert[📝 Log-based Alerts]
         DiskAlert[💿 Disk Space Alerts]
@@ -158,25 +158,25 @@ graph TD
 
 ```mermaid
 flowchart TD
-    subgraph "Backup Types"
+    subgraph BackupTypes["💾 Backup Types"]
         CodeBackup[💻 Code Backup<br/>Application files]
         ConfigBackup[⚙️ Config Backup<br/>System configuration]
         FileBackup[📄 PxPlus Files<br/>Exchange files]
         LogBackup[📝 Log Backup<br/>Application logs]
     end
     
-    subgraph "Backup Schedule"
+    subgraph Schedule["📅 Backup Schedule"]
         Daily[📅 Daily<br/>2:00 AM]
         Weekly[📅 Weekly<br/>Sunday 1:00 AM]
         Monthly[📅 Monthly<br/>1st day 0:00 AM]
     end
     
-    subgraph "Storage"
+    subgraph Storage["💽 Storage"]
         LocalStorage[🖥️ Local Storage<br/>/home/deploy/backups/]
         RemoteStorage[☁️ Remote Storage<br/>Optional cloud backup]
     end
     
-    subgraph "Recovery Process"
+    subgraph Recovery["🔧 Recovery Process"]
         StopServices[⏹️ Stop Services]
         RestoreFiles[📁 Restore Files]
         UpdatePermissions[🔐 Update Permissions]

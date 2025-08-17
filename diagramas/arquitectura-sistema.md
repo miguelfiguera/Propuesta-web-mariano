@@ -4,25 +4,25 @@
 
 ```mermaid
 graph TB
-    subgraph "Internet"
+    subgraph Internet["🌐 Internet"]
         User[👤 Usuario]
     end
     
-    subgraph "Ubuntu Server"
-        subgraph "Web Layer"
+    subgraph Server["🖥️ Ubuntu Server"]
+        subgraph WebLayer["Web Layer"]
             Nginx[🌐 Nginx<br/>Reverse Proxy<br/>Port 80/443]
         end
         
-        subgraph "Application Layer"
+        subgraph AppLayer["Application Layer"]
             Rails[💎 Rails App<br/>Inertia.js + API<br/>Port 3000]
             React[⚛️ React Frontend<br/>TailwindCSS<br/>SSR con Inertia]
         end
         
-        subgraph "File System"
+        subgraph FileSystem["File System"]
             TxtFiles[📄 .txt Files<br/>/tmp/pxplus_exchange]
         end
         
-        subgraph "Legacy System"
+        subgraph Legacy["Legacy System"]
             PxPlus[🏢 PxPlus 7.71<br/>Existing System]
         end
     end
@@ -40,11 +40,11 @@ graph TB
 
 ```mermaid
 sequenceDiagram
-    participant U as Usuario
-    participant N as Nginx
-    participant R as Rails
-    participant F as File System
-    participant P as PxPlus 7.71
+    participant U as 👤 Usuario
+    participant N as 🌐 Nginx
+    participant R as 💎 Rails
+    participant F as 📄 File System
+    participant P as 🏢 PxPlus 7.71
     
     U->>N: Petición HTTPS
     N->>R: Proxy request
@@ -62,50 +62,50 @@ sequenceDiagram
 
 ```mermaid
 graph LR
-    subgraph "Frontend"
-        A[React 18+]
-        B[TypeScript]
-        C[TailwindCSS]
-        D[Inertia.js]
-        E[Vite]
+    subgraph Frontend["🎨 Frontend"]
+        React[React 18+]
+        TS[TypeScript]
+        Tailwind[TailwindCSS]
+        Inertia[Inertia.js]
+        Vite[Vite]
     end
     
-    subgraph "Backend"
-        F[Ruby on Rails 7+]
-        G[JWT Auth]
-        H[Actions Pattern]
-        I[Service Objects]
-        J[Puma Server]
+    subgraph Backend["⚙️ Backend"]
+        Rails[Ruby on Rails 7+]
+        JWT[JWT Auth]
+        Actions[Actions Pattern]
+        Services[Service Objects]
+        Puma[Puma Server]
     end
     
-    subgraph "Infrastructure"
-        K[Ubuntu Server]
-        L[Nginx]
-        M[Let's Encrypt SSL]
-        N[GitHub]
+    subgraph Infrastructure["🏗️ Infrastructure"]
+        Ubuntu[Ubuntu Server]
+        Nginx[Nginx]
+        SSL[Let's Encrypt SSL]
+        GitHub[GitHub]
     end
     
-    subgraph "Legacy"
-        O[PxPlus 7.71]
-        P[File Exchange]
-        Q[Command Execution]
+    subgraph Legacy["🏢 Legacy"]
+        PxPlus[PxPlus 7.71]
+        Files[File Exchange]
+        Commands[Command Execution]
     end
     
-    A --> D
-    B --> A
-    C --> A
-    D --> F
-    E --> A
-    F --> H
-    G --> F
-    H --> I
-    I --> P
-    J --> F
-    K --> L
-    L --> F
-    M --> L
-    N --> K
-    O --> Q
-    P --> O
-    Q --> I
+    React --> Inertia
+    TS --> React
+    Tailwind --> React
+    Inertia --> Rails
+    Vite --> React
+    Rails --> Actions
+    JWT --> Rails
+    Actions --> Services
+    Services --> Files
+    Puma --> Rails
+    Ubuntu --> Nginx
+    Nginx --> Rails
+    SSL --> Nginx
+    GitHub --> Ubuntu
+    PxPlus --> Commands
+    Files --> PxPlus
+    Commands --> Services
 ```
