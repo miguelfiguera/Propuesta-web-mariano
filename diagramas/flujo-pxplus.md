@@ -2,151 +2,202 @@
 
 ## Flujo Principal de Operaciones
 
-```mermaid
-flowchart TD
-    Start([🚀 Inicio]) --> Auth{🔐 Usuario<br/>Autenticado?}
-    Auth -->|No| Login[📝 Login Form]
-    Login --> ValidateAuth[🔍 Validate Against PxPlus]
-    ValidateAuth --> AuthSuccess{✅ Auth Success?}
-    AuthSuccess -->|No| LoginError[❌ Login Error]
-    AuthSuccess -->|Yes| GenerateJWT[🎫 Generate JWT]
-    
-    Auth -->|Yes| CheckPermissions[🛡️ Check Permissions]
-    GenerateJWT --> CheckPermissions
-    
-    CheckPermissions --> AuthorizedAction{✅ Authorized?}
-    AuthorizedAction -->|No| Forbidden[🚫 403 Forbidden]
-    AuthorizedAction -->|Yes| ExecuteAction[⚡ Execute Action]
-    
-    ExecuteAction --> CreateFile[📝 Create .txt File]
-    CreateFile --> ExecuteCommand[💻 Execute PxPlus Command]
-    ExecuteCommand --> WaitResponse[⏱️ Wait for Response]
-    WaitResponse --> ParseResponse[🔄 Parse .txt Response]
-    ParseResponse --> ConvertJSON[📋 Convert to JSON]
-    ConvertJSON --> CleanupFiles[🧹 Cleanup Temp Files]
-    CleanupFiles --> SendResponse[📤 Send to Frontend]
-    SendResponse --> End([🏁 Fin])
-    
-    LoginError --> End
-    Forbidden --> End
-    
-    ExecuteCommand --> Timeout{⏰ Timeout?}
-    Timeout -->|Yes| TimeoutError[❌ Command Timeout]
-    TimeoutError --> CleanupFiles
+```plantuml
+@startuml
+title Flujo Principal de Operaciones
+
+start
+
+if (🔐 Usuario\nAutenticado?) then (No)
+  :📝 Login Form;
+  :🔍 Validate Against PxPlus;
+  if (✅ Auth Success?) then (No)
+    :❌ Login Error;
+    stop
+  else (Yes)
+    :🎫 Generate JWT;
+  endif
+else (Yes)
+endif
+
+:🛡️ Check Permissions;
+
+if (✅ Authorized?) then (No)
+  :🚫 403 Forbidden;
+  stop
+else (Yes)
+  :⚡ Execute Action;
+endif
+
+:📝 Create .txt File;
+:💻 Execute PxPlus Command;
+
+if (⏰ Timeout?) then (Yes)
+  :❌ Command Timeout;
+else (No)
+  :⏱️ Wait for Response;
+  :🔄 Parse .txt Response;
+  :📋 Convert to JSON;
+endif
+
+:🧹 Cleanup Temp Files;
+:📤 Send to Frontend;
+
+stop
+
+@enduml
 ```
 
 ## Flujo de Autenticación
 
-```mermaid
-sequenceDiagram
-    participant F as 🎨 Frontend
-    participant R as 💎 Rails
-    participant FS as 📄 File System
-    participant P as 🏢 PxPlus
-    
-    F->>R: POST /auth/login {email, password}
-    R->>R: Validate input
-    R->>FS: Create auth_request.txt
-    Note over FS: "AUTH|email|password|timestamp"
-    R->>P: Execute auth command
-    P->>FS: Write auth_response.txt
-    Note over FS: "SUCCESS|user_id|email|role|permissions"
-    FS->>R: Read response file
-    R->>R: Parse response
-    R->>R: Generate JWT token
-    R->>FS: Cleanup temp files
-    R->>F: Return {token, user}
+```plantuml
+@startuml
+title Flujo de Autenticación
+
+participant "🎨 Frontend" as F
+participant "💎 Rails" as R
+participant "📄 File System" as FS
+participant "🏢 PxPlus" as P
+
+F -> R : POST /auth/login {email, password}
+R -> R : Validate input
+R -> FS : Create auth_request.txt
+note over FS : "AUTH|email|password|timestamp"
+R -> P : Execute auth command
+P -> FS : Write auth_response.txt
+note over FS : "SUCCESS|user_id|email|role|permissions"
+FS -> R : Read response file
+R -> R : Parse response
+R -> R : Generate JWT token
+R -> FS : Cleanup temp files
+R -> F : Return {token, user}
+
+@enduml
 ```
 
 ## Flujo de Operaciones CRUD
 
-```mermaid
-flowchart TD
-    subgraph PaymentCRUD["💳 Payment CRUD Flow"]
-        CreatePayment[Create Payment] --> GenPaymentFile[📝 Generate payment_create.txt]
-        GenPaymentFile --> ExecCreateCmd[💻 Execute create_payment command]
-        ExecCreateCmd --> ParseCreateResp[📋 Parse response]
-        
-        ReadPayment[Read Payment] --> GenQueryFile[📝 Generate payment_query.txt]
-        GenQueryFile --> ExecQueryCmd[💻 Execute query_payment command]
-        ExecQueryCmd --> ParseQueryResp[📋 Parse response]
-        
-        UpdatePayment[Update Payment] --> GenUpdateFile[📝 Generate payment_update.txt]
-        GenUpdateFile --> ExecUpdateCmd[💻 Execute update_payment command]
-        ExecUpdateCmd --> ParseUpdateResp[📋 Parse response]
-        
-        DeletePayment[Delete Payment] --> GenDeleteFile[📝 Generate payment_delete.txt]
-        GenDeleteFile --> ExecDeleteCmd[💻 Execute delete_payment command]
-        ExecDeleteCmd --> ParseDeleteResp[📋 Parse response]
-    end
-    
-    ParseCreateResp --> ReturnJSON[📤 Return JSON to Frontend]
-    ParseQueryResp --> ReturnJSON
-    ParseUpdateResp --> ReturnJSON
-    ParseDeleteResp --> ReturnJSON
+```plantuml
+@startuml
+title Operaciones CRUD de Pagos
+
+package "💳 Payment CRUD Flow" {
+  rectangle "Create" {
+    :Create Payment] as Create
+    Create -> :📝 Generate payment_create.txt]
+    :📝 Generate payment_create.txt] -> :💻 Execute create_payment command]
+    :💻 Execute create_payment command] -> :📋 Parse response] as ParseCreate
+  }
+  
+  rectangle "Read" {
+    :Read Payment] as Read
+    Read -> :📝 Generate payment_query.txt]
+    :📝 Generate payment_query.txt] -> :💻 Execute query_payment command]
+    :💻 Execute query_payment command] -> :📋 Parse response] as ParseRead
+  }
+  
+  rectangle "Update" {
+    :Update Payment] as Update
+    Update -> :📝 Generate payment_update.txt]
+    :📝 Generate payment_update.txt] -> :💻 Execute update_payment command]
+    :💻 Execute update_payment command] -> :📋 Parse response] as ParseUpdate
+  }
+  
+  rectangle "Delete" {
+    :Delete Payment] as Delete
+    Delete -> :📝 Generate payment_delete.txt]
+    :📝 Generate payment_delete.txt] -> :💻 Execute delete_payment command]
+    :💻 Execute delete_payment command] -> :📋 Parse response] as ParseDelete
+  }
+}
+
+ParseCreate -> :📤 Return JSON to Frontend]
+ParseRead -> :📤 Return JSON to Frontend]
+ParseUpdate -> :📤 Return JSON to Frontend]
+ParseDelete -> :📤 Return JSON to Frontend]
+
+@enduml
 ```
 
 ## Formato de Archivos de Intercambio
 
-```mermaid
-graph LR
-    subgraph Input["📥 Input Files (.txt)"]
-        Auth["🔐 auth_request.txt<br/>AUTH|email|password|timestamp"]
-        Payment["💳 payment_create.txt<br/>CREATE_PAYMENT|amount|currency|account"]
-        Query["🔍 query_request.txt<br/>QUERY|table|fields|conditions"]
-        Report["📊 report_request.txt<br/>GENERATE_REPORT|type|parameters|format"]
-    end
-    
-    subgraph Commands["💻 PxPlus Commands"]
-        AuthCmd[auth_user]
-        PaymentCmd[create_payment]
-        QueryCmd[execute_query]
-        ReportCmd[generate_report]
-    end
-    
-    subgraph Output["📤 Output Files (.txt)"]
-        AuthResp["✅ auth_response.txt<br/>SUCCESS|user_id|role|permissions"]
-        PaymentResp["💳 payment_response.txt<br/>SUCCESS|payment_id|status|message"]
-        QueryResp["📋 query_response.txt<br/>DATA|field1|field2|field3<br/>value1|value2|value3"]
-        ReportResp["📊 report_response.txt<br/>REPORT|data|metadata|status"]
-    end
-    
-    Auth --> AuthCmd
-    Payment --> PaymentCmd
-    Query --> QueryCmd
-    Report --> ReportCmd
-    
-    AuthCmd --> AuthResp
-    PaymentCmd --> PaymentResp
-    QueryCmd --> QueryResp
-    ReportCmd --> ReportResp
+```plantuml
+@startuml
+title Formato de Archivos de Intercambio
+
+package "📥 Input Files (.txt)" {
+  [🔐 auth_request.txt\nAUTH|email|password|timestamp] as Auth
+  [💳 payment_create.txt\nCREATE_PAYMENT|amount|currency|account] as Payment
+  [🔍 query_request.txt\nQUERY|table|fields|conditions] as Query
+  [📊 report_request.txt\nGENERATE_REPORT|type|parameters|format] as Report
+}
+
+package "💻 PxPlus Commands" {
+  [auth_user] as AuthCmd
+  [create_payment] as PaymentCmd
+  [execute_query] as QueryCmd
+  [generate_report] as ReportCmd
+}
+
+package "📤 Output Files (.txt)" {
+  [✅ auth_response.txt\nSUCCESS|user_id|role|permissions] as AuthResp
+  [💳 payment_response.txt\nSUCCESS|payment_id|status|message] as PaymentResp
+  [📋 query_response.txt\nDATA|field1|field2|field3\nvalue1|value2|value3] as QueryResp
+  [📊 report_response.txt\nREPORT|data|metadata|status] as ReportResp
+}
+
+Auth --> AuthCmd
+Payment --> PaymentCmd
+Query --> QueryCmd
+Report --> ReportCmd
+
+AuthCmd --> AuthResp
+PaymentCmd --> PaymentResp
+QueryCmd --> QueryResp
+ReportCmd --> ReportResp
+
+@enduml
 ```
 
 ## Manejo de Errores
 
-```mermaid
-flowchart TD
-    Operation[🔄 Operation Start] --> ExecuteCmd[💻 Execute Command]
-    ExecuteCmd --> CheckTimeout{⏰ Timeout?}
-    CheckTimeout -->|Yes| TimeoutError[❌ Timeout Error]
-    CheckTimeout -->|No| CheckExitCode{🔍 Exit Code OK?}
+```plantuml
+@startuml
+title Manejo de Errores
+
+start
+
+:🔄 Operation Start;
+:💻 Execute Command;
+
+if (⏰ Timeout?) then (Yes)
+  :❌ Timeout Error;
+else (No)
+  if (🔍 Exit Code OK?) then (No)
+    :❌ Command Error;
+  else (Yes)
+    :📖 Read Response;
     
-    CheckExitCode -->|No| CommandError[❌ Command Error]
-    CheckExitCode -->|Yes| ReadResponse[📖 Read Response]
-    
-    ReadResponse --> ValidateResponse{✅ Valid Format?}
-    ValidateResponse -->|No| ParseError[❌ Parse Error]
-    ValidateResponse -->|Yes| CheckStatus{🔍 Status = SUCCESS?}
-    
-    CheckStatus -->|No| BusinessError[❌ Business Logic Error]
-    CheckStatus -->|Yes| Success[✅ Success]
-    
-    TimeoutError --> LogError[📝 Log Error]
-    CommandError --> LogError
-    ParseError --> LogError
-    BusinessError --> LogError
-    
-    LogError --> CleanupFiles[🧹 Cleanup Files]
-    Success --> CleanupFiles
-    CleanupFiles --> ReturnResponse[📤 Return Response]
+    if (✅ Valid Format?) then (No)
+      :❌ Parse Error;
+    else (Yes)
+      if (🔍 Status = SUCCESS?) then (No)
+        :❌ Business Logic Error;
+      else (Yes)
+        :✅ Success;
+        :🧹 Cleanup Files;
+        :📤 Return Response;
+        stop
+      endif
+    endif
+  endif
+endif
+
+:📝 Log Error;
+:🧹 Cleanup Files;
+:📤 Return Response;
+
+stop
+
+@enduml
 ```

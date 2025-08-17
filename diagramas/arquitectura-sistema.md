@@ -2,110 +2,122 @@
 
 ## Arquitectura General
 
-```mermaid
-graph TB
-    subgraph Internet["🌐 Internet"]
-        User[👤 Usuario]
-    end
-    
-    subgraph Server["🖥️ Ubuntu Server"]
-        subgraph WebLayer["Web Layer"]
-            Nginx[🌐 Nginx<br/>Reverse Proxy<br/>Port 80/443]
-        end
-        
-        subgraph AppLayer["Application Layer"]
-            Rails[💎 Rails App<br/>Inertia.js + API<br/>Port 3000]
-            React[⚛️ React Frontend<br/>TailwindCSS<br/>SSR con Inertia]
-        end
-        
-        subgraph FileSystem["File System"]
-            TxtFiles[📄 .txt Files<br/>/tmp/pxplus_exchange]
-        end
-        
-        subgraph Legacy["Legacy System"]
-            PxPlus[🏢 PxPlus 7.71<br/>Existing System]
-        end
-    end
-    
-    User -->|HTTPS Requests| Nginx
-    Nginx -->|Proxy Pass| Rails
-    Rails -->|Inertia.js| React
-    Rails -->|Generate .txt| TxtFiles
-    Rails -->|Execute Commands| PxPlus
-    PxPlus -->|Response .txt| TxtFiles
-    TxtFiles -->|Parse to JSON| Rails
+```plantuml
+@startuml
+title Arquitectura General del Sistema
+
+package "Internet" {
+  [👤 Usuario] as User
+}
+
+package "Ubuntu Server" {
+  package "Web Layer" {
+    [🌐 Nginx\nReverse Proxy\nPort 80/443] as Nginx
+  }
+  
+  package "Application Layer" {
+    [💎 Rails App\nInertia.js + API\nPort 3000] as Rails
+    [⚛️ React Frontend\nTailwindCSS\nSSR con Inertia] as React
+  }
+  
+  package "File System" {
+    [📄 .txt Files\n/tmp/pxplus_exchange] as TxtFiles
+  }
+  
+  package "Legacy System" {
+    [🏢 PxPlus 7.71\nExisting System] as PxPlus
+  }
+}
+
+User -down-> Nginx : HTTPS Requests
+Nginx -down-> Rails : Proxy Pass
+Rails -right-> React : Inertia.js
+Rails -down-> TxtFiles : Generate .txt
+Rails -down-> PxPlus : Execute Commands
+PxPlus -up-> TxtFiles : Response .txt
+TxtFiles -up-> Rails : Parse to JSON
+
+@enduml
 ```
 
 ## Flujo de Datos
 
-```mermaid
-sequenceDiagram
-    participant U as 👤 Usuario
-    participant N as 🌐 Nginx
-    participant R as 💎 Rails
-    participant F as 📄 File System
-    participant P as 🏢 PxPlus 7.71
-    
-    U->>N: Petición HTTPS
-    N->>R: Proxy request
-    R->>R: Validate JWT
-    R->>R: Action.call()
-    R->>F: Generate input.txt
-    R->>P: Execute command
-    P->>F: Write response.txt
-    F->>R: Read response
-    R->>R: Parse txt → JSON
-    R->>U: Inertia.js response
+```plantuml
+@startuml
+title Flujo de Datos
+
+participant "👤 Usuario" as U
+participant "🌐 Nginx" as N
+participant "💎 Rails" as R
+participant "📄 File System" as F
+participant "🏢 PxPlus 7.71" as P
+
+U -> N : Petición HTTPS
+N -> R : Proxy request
+R -> R : Validate JWT
+R -> R : Action.call()
+R -> F : Generate input.txt
+R -> P : Execute command
+P -> F : Write response.txt
+F -> R : Read response
+R -> R : Parse txt → JSON
+R -> U : Inertia.js response
+
+@enduml
 ```
 
 ## Stack Tecnológico
 
-```mermaid
-graph LR
-    subgraph Frontend["🎨 Frontend"]
-        React[React 18+]
-        TS[TypeScript]
-        Tailwind[TailwindCSS]
-        Inertia[Inertia.js]
-        Vite[Vite]
-    end
-    
-    subgraph Backend["⚙️ Backend"]
-        Rails[Ruby on Rails 7+]
-        JWT[JWT Auth]
-        Actions[Actions Pattern]
-        Services[Service Objects]
-        Puma[Puma Server]
-    end
-    
-    subgraph Infrastructure["🏗️ Infrastructure"]
-        Ubuntu[Ubuntu Server]
-        Nginx[Nginx]
-        SSL[Let's Encrypt SSL]
-        GitHub[GitHub]
-    end
-    
-    subgraph Legacy["🏢 Legacy"]
-        PxPlus[PxPlus 7.71]
-        Files[File Exchange]
-        Commands[Command Execution]
-    end
-    
-    React --> Inertia
-    TS --> React
-    Tailwind --> React
-    Inertia --> Rails
-    Vite --> React
-    Rails --> Actions
-    JWT --> Rails
-    Actions --> Services
-    Services --> Files
-    Puma --> Rails
-    Ubuntu --> Nginx
-    Nginx --> Rails
-    SSL --> Nginx
-    GitHub --> Ubuntu
-    PxPlus --> Commands
-    Files --> PxPlus
-    Commands --> Services
+```plantuml
+@startuml
+title Stack Tecnológico
+
+package "🎨 Frontend" {
+  [React 18+] as React
+  [TypeScript] as TS
+  [TailwindCSS] as Tailwind
+  [Inertia.js] as Inertia
+  [Vite] as Vite
+}
+
+package "⚙️ Backend" {
+  [Ruby on Rails 7+] as Rails
+  [JWT Auth] as JWT
+  [Actions Pattern] as Actions
+  [Service Objects] as Services
+  [Puma Server] as Puma
+}
+
+package "🏗️ Infrastructure" {
+  [Ubuntu Server] as Ubuntu
+  [Nginx] as Nginx
+  [Let's Encrypt SSL] as SSL
+  [GitHub] as GitHub
+}
+
+package "🏢 Legacy" {
+  [PxPlus 7.71] as PxPlus
+  [File Exchange] as Files
+  [Command Execution] as Commands
+}
+
+React --> Inertia
+TS --> React
+Tailwind --> React
+Inertia --> Rails
+Vite --> React
+Rails --> Actions
+JWT --> Rails
+Actions --> Services
+Services --> Files
+Puma --> Rails
+Ubuntu --> Nginx
+Nginx --> Rails
+SSL --> Nginx
+GitHub --> Ubuntu
+PxPlus --> Commands
+Files --> PxPlus
+Commands --> Services
+
+@enduml
 ```

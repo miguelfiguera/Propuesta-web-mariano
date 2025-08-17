@@ -2,223 +2,247 @@
 
 ## Estructura de Componentes
 
-```mermaid
-graph TD
-    subgraph AppStructure["🏠 App Structure"]
-        App[App.tsx<br/>Main Application]
-        Layout[Layout.tsx<br/>Main Layout]
-    end
+```plantuml
+@startuml
+title Estructura de Componentes
 
-    subgraph Authentication["🔐 Authentication"]
-        AuthProvider[AuthProvider]
-        LoginForm[LoginForm]
-        ProtectedRoute[ProtectedRoute]
-    end
+package "🏠 App Structure" {
+  [App.tsx\nMain Application] as App
+  [Layout.tsx\nMain Layout] as Layout
+}
 
-    subgraph PaymentModule["💳 Payment Module"]
-        PaymentList[PaymentList]
-        PaymentForm[PaymentForm]
-        PaymentCard[PaymentCard]
-        PaymentDetails[PaymentDetails]
-    end
+package "🔐 Authentication" {
+  [AuthProvider] as AuthProvider
+  [LoginForm] as LoginForm
+  [ProtectedRoute] as ProtectedRoute
+}
 
-    subgraph DatabaseModule["🗄️ Database Module"]
-        QueryBuilder[QueryBuilder]
-        ResultsTable[ResultsTable]
-        QueryHistory[QueryHistory]
-    end
+package "💳 Payment Module" {
+  [PaymentList] as PaymentList
+  [PaymentForm] as PaymentForm
+  [PaymentCard] as PaymentCard
+  [PaymentDetails] as PaymentDetails
+}
 
-    subgraph ReportsModule["📊 Reports Module"]
-        ReportGenerator[ReportGenerator]
-        ReportViewer[ReportViewer]
-        ReportList[ReportList]
-    end
+package "🗄️ Database Module" {
+  [QueryBuilder] as QueryBuilder
+  [ResultsTable] as ResultsTable
+  [QueryHistory] as QueryHistory
+}
 
-    subgraph SharedComponents["🔧 Shared Components"]
-        Button[Button]
-        Input[Input]
-        Modal[Modal]
-        Loading[Loading]
-        ErrorBoundary[ErrorBoundary]
-    end
+package "📊 Reports Module" {
+  [ReportGenerator] as ReportGenerator
+  [ReportViewer] as ReportViewer
+  [ReportList] as ReportList
+}
 
-    App --> Layout
-    Layout --> AuthProvider
-    AuthProvider --> ProtectedRoute
-    ProtectedRoute --> PaymentList
-    ProtectedRoute --> QueryBuilder
-    ProtectedRoute --> ReportGenerator
+package "🔧 Shared Components" {
+  [Button] as Button
+  [Input] as Input
+  [Modal] as Modal
+  [Loading] as Loading
+  [ErrorBoundary] as ErrorBoundary
+}
 
-    PaymentList --> PaymentCard
-    PaymentCard --> PaymentDetails
-    PaymentForm --> Input
-    PaymentForm --> Button
+App --> Layout
+Layout --> AuthProvider
+AuthProvider --> ProtectedRoute
+ProtectedRoute --> PaymentList
+ProtectedRoute --> QueryBuilder
+ProtectedRoute --> ReportGenerator
 
-    QueryBuilder --> ResultsTable
-    ReportGenerator --> ReportViewer
+PaymentList --> PaymentCard
+PaymentCard --> PaymentDetails
+PaymentForm --> Input
+PaymentForm --> Button
 
-    Layout --> ErrorBoundary
-    Layout --> Loading
+QueryBuilder --> ResultsTable
+ReportGenerator --> ReportViewer
+
+Layout --> ErrorBoundary
+Layout --> Loading
+
+@enduml
 ```
 
 ## Mobile-First Responsive Design
 
-```mermaid
-graph LR
-    subgraph Mobile["📱 Mobile (320px+)"]
-        MobileNav[🍔 Hamburger Menu]
-        MobileCards[📱 Card Layout]
-        MobileStack[📚 Stacked Forms]
-    end
-    
-    subgraph Tablet["📱 Tablet (768px+)"]
-        TabletSidebar[📑 Collapsible Sidebar]
-        TabletGrid[🔲 Grid Layout]
-        TabletTabs[📂 Tab Navigation]
-    end
-    
-    subgraph Desktop["🖥️ Desktop (1024px+)"]
-        DesktopSidebar[📋 Fixed Sidebar]
-        DesktopTable[🗂️ Table Layout]
-        DesktopMultiColumn[📊 Multi-column]
-    end
-    
-    MobileNav -->|Breakpoint| TabletSidebar
-    MobileCards -->|Breakpoint| TabletGrid
-    MobileStack -->|Breakpoint| TabletTabs
-    
-    TabletSidebar -->|Breakpoint| DesktopSidebar
-    TabletGrid -->|Breakpoint| DesktopTable
-    TabletTabs -->|Breakpoint| DesktopMultiColumn
+```plantuml
+@startuml
+title Mobile-First Responsive Design
+
+package "📱 Mobile (320px+)" {
+  [🍔 Hamburger Menu] as MobileNav
+  [📱 Card Layout] as MobileCards
+  [📚 Stacked Forms] as MobileStack
+}
+
+package "📱 Tablet (768px+)" {
+  [📑 Collapsible Sidebar] as TabletSidebar
+  [🔲 Grid Layout] as TabletGrid
+  [📂 Tab Navigation] as TabletTabs
+}
+
+package "🖥️ Desktop (1024px+)" {
+  [📋 Fixed Sidebar] as DesktopSidebar
+  [🗂️ Table Layout] as DesktopTable
+  [📊 Multi-column] as DesktopMultiColumn
+}
+
+MobileNav -right-> TabletSidebar : Breakpoint
+MobileCards -right-> TabletGrid : Breakpoint
+MobileStack -right-> TabletTabs : Breakpoint
+
+TabletSidebar -right-> DesktopSidebar : Breakpoint
+TabletGrid -right-> DesktopTable : Breakpoint
+TabletTabs -right-> DesktopMultiColumn : Breakpoint
+
+@enduml
 ```
 
 ## State Management Flow
 
-```mermaid
-stateDiagram-v2
-    [*] --> AppInit
-    AppInit --> CheckAuth
-    
-    state CheckAuth {
-        [*] --> ValidateToken
-        ValidateToken --> TokenValid
-        ValidateToken --> TokenInvalid
-        TokenValid --> Authenticated
-        TokenInvalid --> Unauthenticated
-    }
-    
-    Authenticated --> Dashboard
-    Unauthenticated --> LoginPage
-    
-    state Dashboard {
-        [*] --> LoadingData
-        LoadingData --> DataLoaded
-        LoadingData --> LoadingError
-        DataLoaded --> UserInteraction
-        UserInteraction --> PerformAction
-        PerformAction --> LoadingData
-    }
-    
-    LoginPage --> Authentication
-    Authentication --> CheckAuth
-    
-    state PerformAction {
-        [*] --> ValidateInput
-        ValidateInput --> SendRequest
-        SendRequest --> ProcessResponse
-        ProcessResponse --> UpdateUI
-        UpdateUI --> [*]
-    }
+```plantuml
+@startuml
+title State Management Flow
+
+[*] --> AppInit
+AppInit --> CheckAuth
+
+state CheckAuth {
+  [*] --> ValidateToken
+  ValidateToken --> TokenValid
+  ValidateToken --> TokenInvalid
+  TokenValid --> Authenticated
+  TokenInvalid --> Unauthenticated
+}
+
+Authenticated --> Dashboard
+Unauthenticated --> LoginPage
+
+state Dashboard {
+  [*] --> LoadingData
+  LoadingData --> DataLoaded
+  LoadingData --> LoadingError
+  DataLoaded --> UserInteraction
+  UserInteraction --> PerformAction
+  PerformAction --> LoadingData
+}
+
+LoginPage --> Authentication
+Authentication --> CheckAuth
+
+state PerformAction {
+  [*] --> ValidateInput
+  ValidateInput --> SendRequest
+  SendRequest --> ProcessResponse
+  ProcessResponse --> UpdateUI
+  UpdateUI --> [*]
+}
+
+@enduml
 ```
 
 ## Inertia.js Data Flow
 
-```mermaid
-sequenceDiagram
-    participant User as 👤 User
-    participant React as ⚛️ React Component
-    participant Inertia as 🔄 Inertia.js
-    participant Rails as 💎 Rails Controller
-    participant Action as ⚡ Action
-    participant PxPlus as 🏢 PxPlus
-    
-    User->>React: Click/Submit
-    React->>Inertia: Inertia.post(url, data)
-    Inertia->>Rails: HTTP Request
-    Rails->>Action: Execute Action
-    Action->>PxPlus: Command Execution
-    PxPlus->>Action: Response
-    Action->>Rails: Parsed JSON
-    Rails->>Inertia: Inertia Response
-    Inertia->>React: Update Props
-    React->>User: Updated UI
+```plantuml
+@startuml
+title Inertia.js Data Flow
+
+participant "👤 User" as User
+participant "⚛️ React Component" as React
+participant "🔄 Inertia.js" as Inertia
+participant "💎 Rails Controller" as Rails
+participant "⚡ Action" as Action
+participant "🏢 PxPlus" as PxPlus
+
+User -> React : Click/Submit
+React -> Inertia : Inertia.post(url, data)
+Inertia -> Rails : HTTP Request
+Rails -> Action : Execute Action
+Action -> PxPlus : Command Execution
+PxPlus -> Action : Response
+Action -> Rails : Parsed JSON
+Rails -> Inertia : Inertia Response
+Inertia -> React : Update Props
+React -> User : Updated UI
+
+@enduml
 ```
 
 ## Component Props Flow
 
-```mermaid
-graph TD
-    subgraph ServerSide["🖥️ Server-Side (Rails)"]
-        Controller[🎮 Controller]
-        Action[⚡ Action]
-        Data[📊 Data from PxPlus]
-    end
-    
-    subgraph ClientSide["🎨 Client-Side (React)"]
-        PageComponent[📄 Page Component]
-        ChildComponents[👶 Child Components]
-        LocalState[🏪 Local State]
-        
-        subgraph SharedState["🌐 Shared State"]
-            AuthContext[🔐 Auth Context]
-            ThemeContext[🎨 Theme Context]
-        end
-    end
-    
-    Data --> Action
-    Action --> Controller
-    Controller -->|Inertia Props| PageComponent
-    PageComponent -->|Props| ChildComponents
-    ChildComponents -->|State Updates| LocalState
-    
-    AuthContext -->|Auth Data| PageComponent
-    ThemeContext -->|Theme Data| PageComponent
+```plantuml
+@startuml
+title Component Props Flow
+
+package "🖥️ Server-Side (Rails)" {
+  [🎮 Controller] as Controller
+  [⚡ Action] as Action
+  [📊 Data from PxPlus] as Data
+}
+
+package "🎨 Client-Side (React)" {
+  [📄 Page Component] as PageComponent
+  [👶 Child Components] as ChildComponents
+  [🏪 Local State] as LocalState
+  
+  package "🌐 Shared State" {
+    [🔐 Auth Context] as AuthContext
+    [🎨 Theme Context] as ThemeContext
+  }
+}
+
+Data --> Action
+Action --> Controller
+Controller -->|Inertia Props| PageComponent
+PageComponent -->|Props| ChildComponents
+ChildComponents -->|State Updates| LocalState
+
+AuthContext -->|Auth Data| PageComponent
+ThemeContext -->|Theme Data| PageComponent
+
+@enduml
 ```
 
 ## TailwindCSS Design System
 
-```mermaid
-graph LR
-    subgraph DesignTokens["🎨 Design Tokens"]
-        Colors[🎨 Colors<br/>Primary, Secondary<br/>Success, Error]
-        Typography[📝 Typography<br/>Headings, Body<br/>Sizes, Weights]
-        Spacing[📏 Spacing<br/>Margins, Padding<br/>Grid System]
-        Shadows[🌓 Shadows<br/>Elevation Levels]
-    end
-    
-    subgraph Components["🧩 Components"]
-        Buttons[🔘 Buttons<br/>Primary, Secondary<br/>Sizes, States]
-        Forms[📝 Forms<br/>Inputs, Selects<br/>Validation States]
-        Cards[🃏 Cards<br/>Content Containers<br/>Actions, Headers]
-        Navigation[🧭 Navigation<br/>Menus, Breadcrumbs<br/>Tabs, Pagination]
-    end
-    
-    subgraph Responsive["📱 Responsive"]
-        Mobile[📱 Mobile First<br/>320px+ Base]
-        Tablet[📱 Tablet<br/>768px+ md:]
-        Desktop[🖥️ Desktop<br/>1024px+ lg:]
-    end
-    
-    Colors --> Buttons
-    Typography --> Forms
-    Spacing --> Cards
-    Shadows --> Navigation
-    
-    Buttons --> Mobile
-    Forms --> Mobile
-    Cards --> Mobile
-    Navigation --> Mobile
-    
-    Mobile --> Tablet
-    Tablet --> Desktop
+```plantuml
+@startuml
+title TailwindCSS Design System
+
+package "🎨 Design Tokens" {
+  [🎨 Colors\nPrimary, Secondary\nSuccess, Error] as Colors
+  [📝 Typography\nHeadings, Body\nSizes, Weights] as Typography
+  [📏 Spacing\nMargins, Padding\nGrid System] as Spacing
+  [🌓 Shadows\nElevation Levels] as Shadows
+}
+
+package "🧩 Components" {
+  [🔘 Buttons\nPrimary, Secondary\nSizes, States] as Buttons
+  [📝 Forms\nInputs, Selects\nValidation States] as Forms
+  [🃏 Cards\nContent Containers\nActions, Headers] as Cards
+  [🧭 Navigation\nMenus, Breadcrumbs\nTabs, Pagination] as Navigation
+}
+
+package "📱 Responsive" {
+  [📱 Mobile First\n320px+ Base] as Mobile
+  [📱 Tablet\n768px+ md:] as Tablet
+  [🖥️ Desktop\n1024px+ lg:] as Desktop
+}
+
+Colors --> Buttons
+Typography --> Forms
+Spacing --> Cards
+Shadows --> Navigation
+
+Buttons --> Mobile
+Forms --> Mobile
+Cards --> Mobile
+Navigation --> Mobile
+
+Mobile --> Tablet
+Tablet --> Desktop
+
+@enduml
 ```

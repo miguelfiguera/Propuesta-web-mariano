@@ -2,200 +2,237 @@
 
 ## Proceso de Setup del Servidor
 
-```mermaid
-flowchart TD
-    Start([🚀 Inicio Setup]) --> CheckServer{🖥️ Servidor Ubuntu<br/>Disponible?}
-    CheckServer -->|No| ProvisionServer[☁️ Provisionar VPS]
-    CheckServer -->|Yes| UpdateSystem[🔄 Actualizar Sistema]
-    ProvisionServer --> UpdateSystem
-    
-    UpdateSystem --> InstallDeps[📦 Instalar Dependencias]
-    
-    subgraph Installation["📦 Instalación de Software"]
-        InstallDeps --> Ruby[💎 Instalar Ruby 3.2]
-        Ruby --> Rails[🚂 Instalar Rails 7+]
-        Rails --> Node[📗 Instalar Node.js 18]
-        Node --> Nginx[🌐 Instalar Nginx]
-        Nginx --> Git[📚 Instalar Git]
-    end
-    
-    Git --> ConfigNginx[⚙️ Configurar Nginx]
-    ConfigNginx --> SetupSSL[🔒 Setup SSL/TLS]
-    SetupSSL --> CreateUser[👤 Crear Usuario Deploy]
-    CreateUser --> SetupPxPlus[🏢 Configurar PxPlus Access]
-    SetupPxPlus --> TestSetup[🧪 Probar Configuración]
-    TestSetup --> Ready[✅ Servidor Listo]
+```plantuml
+@startuml
+title Proceso de Setup del Servidor
+
+start
+
+if (🖥️ Servidor Ubuntu\nDisponible?) then (No)
+  :☁️ Provisionar VPS;
+else (Yes)
+endif
+
+:🔄 Actualizar Sistema;
+:📦 Instalar Dependencias;
+
+rectangle "Installation" {
+  :💎 Instalar Ruby 3.2;
+  :🚂 Instalar Rails 7+;
+  :📗 Instalar Node.js 18;
+  :🌐 Instalar Nginx;
+  :📚 Instalar Git;
+}
+
+:⚙️ Configurar Nginx;
+:🔒 Setup SSL/TLS;
+:👤 Crear Usuario Deploy;
+:🏢 Configurar PxPlus Access;
+:🧪 Probar Configuración;
+:✅ Servidor Listo;
+
+stop
+
+@enduml
 ```
 
 ## Flujo de Deployment
 
-```mermaid
-sequenceDiagram
-    participant Dev as 👨‍💻 Developer
-    participant Git as 📚 GitHub
-    participant Server as 🖥️ Ubuntu Server
-    participant App as 💎 Rails App
-    participant Nginx as 🌐 Nginx
-    participant PxPlus as 🏢 PxPlus
-    
-    Dev->>Git: git push origin main
-    Dev->>Server: SSH connection
-    Server->>Git: git pull origin main
-    Server->>Server: bundle install
-    Server->>Server: npm install & build
-    Server->>App: Restart Rails app
-    Server->>Nginx: Reload configuration
-    App->>PxPlus: Test connection
-    PxPlus->>App: Connection OK
-    Server->>Dev: Deployment successful
+```plantuml
+@startuml
+title Flujo de Deployment
+
+participant "👨‍💻 Developer" as Dev
+participant "📚 GitHub" as Git
+participant "🖥️ Ubuntu Server" as Server
+participant "💎 Rails App" as App
+participant "🌐 Nginx" as Nginx
+participant "🏢 PxPlus" as PxPlus
+
+Dev -> Git : git push origin main
+Dev -> Server : SSH connection
+Server -> Git : git pull origin main
+Server -> Server : bundle install
+Server -> Server : npm install & build
+Server -> App : Restart Rails app
+Server -> Nginx : Reload configuration
+App -> PxPlus : Test connection
+PxPlus -> App : Connection OK
+Server -> Dev : Deployment successful
+
+@enduml
 ```
 
 ## Configuración de Archivos
 
-```mermaid
-graph TD
-    subgraph SystemConfig["⚙️ Configuración del Sistema"]
-        SystemdService[⚙️ Systemd Service<br/>/etc/systemd/system/pxplus_app.service]
-        NginxConfig[🌐 Nginx Config<br/>/etc/nginx/sites-available/pxplus_app]
-        EnvFile[🔐 Environment Variables<br/>.env.production]
-        LogRotate[📝 Log Rotation<br/>/etc/logrotate.d/pxplus_app]
-    end
-    
-    subgraph AppConfig["📁 Aplicación"]
-        AppDir[📁 /home/deploy/pxplus_app/]
-        PumaConfig[🐾 Puma Config<br/>config/puma.rb]
-        TempFiles[📄 Temp Files<br/>/tmp/pxplus_exchange/]
-        BackupDir[💾 Backups<br/>/home/deploy/backups/]
-    end
-    
-    subgraph Scripts["📜 Scripts de Automatización"]
-        DeployScript[🚀 deploy.sh]
-        BackupScript[💾 backup.sh]
-        CleanupScript[🧹 cleanup.sh]
-        HealthCheck[🏥 health_check.sh]
-    end
-    
-    SystemdService --> AppDir
-    NginxConfig --> PumaConfig
-    EnvFile --> TempFiles
-    DeployScript --> BackupScript
-    BackupScript --> CleanupScript
-    CleanupScript --> HealthCheck
+```plantuml
+@startuml
+title Configuración de Archivos
+
+package "⚙️ Configuración del Sistema" {
+  [⚙️ Systemd Service\n/etc/systemd/system/pxplus_app.service] as SystemdService
+  [🌐 Nginx Config\n/etc/nginx/sites-available/pxplus_app] as NginxConfig
+  [🔐 Environment Variables\n.env.production] as EnvFile
+  [📝 Log Rotation\n/etc/logrotate.d/pxplus_app] as LogRotate
+}
+
+package "📁 Aplicación" {
+  [📁 /home/deploy/pxplus_app/] as AppDir
+  [🐾 Puma Config\nconfig/puma.rb] as PumaConfig
+  [📄 Temp Files\n/tmp/pxplus_exchange/] as TempFiles
+  [💾 Backups\n/home/deploy/backups/] as BackupDir
+}
+
+package "📜 Scripts de Automatización" {
+  [🚀 deploy.sh] as DeployScript
+  [💾 backup.sh] as BackupScript
+  [🧹 cleanup.sh] as CleanupScript
+  [🏥 health_check.sh] as HealthCheck
+}
+
+SystemdService --> AppDir
+NginxConfig --> PumaConfig
+EnvFile --> TempFiles
+DeployScript --> BackupScript
+BackupScript --> CleanupScript
+CleanupScript --> HealthCheck
+
+@enduml
 ```
 
 ## Monitoreo y Mantenimiento
 
-```mermaid
-flowchart LR
-    subgraph SystemLogs["📝 Logs del Sistema"]
-        NginxLogs[🌐 Nginx Logs<br/>/var/log/nginx/]
-        RailsLogs[💎 Rails Logs<br/>log/production.log]
-        SystemLogs[🖥️ System Logs<br/>/var/log/syslog]
-        PxPlusLogs[🏢 PxPlus Logs<br/>Custom location]
-    end
-    
-    subgraph MonitoringScripts["📊 Scripts de Monitoreo"]
-        HealthCheck[🏥 Health Check<br/>App status, disk space]
-        LogAnalysis[📊 Log Analysis<br/>Error patterns, performance]
-        BackupCheck[💾 Backup Verification<br/>Backup integrity]
-        SecurityScan[🔒 Security Scan<br/>Failed logins, file access]
-    end
-    
-    subgraph Alerts["🚨 Alertas"]
-        EmailAlert[📧 Email Alerts]
-        LogAlert[📝 Log-based Alerts]
-        DiskAlert[💿 Disk Space Alerts]
-        ServiceAlert[⚙️ Service Down Alerts]
-    end
-    
-    NginxLogs --> HealthCheck
-    RailsLogs --> LogAnalysis
-    SystemLogs --> BackupCheck
-    PxPlusLogs --> SecurityScan
-    
-    HealthCheck --> EmailAlert
-    LogAnalysis --> LogAlert
-    BackupCheck --> DiskAlert
-    SecurityScan --> ServiceAlert
+```plantuml
+@startuml
+title Monitoreo y Mantenimiento
+
+package "📝 Logs del Sistema" {
+  [🌐 Nginx Logs\n/var/log/nginx/] as NginxLogs
+  [💎 Rails Logs\nlog/production.log] as RailsLogs
+  [🖥️ System Logs\n/var/log/syslog] as SystemLogs
+  [🏢 PxPlus Logs\nCustom location] as PxPlusLogs
+}
+
+package "📊 Scripts de Monitoreo" {
+  [🏥 Health Check\nApp status, disk space] as HealthCheck
+  [📊 Log Analysis\nError patterns, performance] as LogAnalysis
+  [💾 Backup Verification\nBackup integrity] as BackupCheck
+  [🔒 Security Scan\nFailed logins, file access] as SecurityScan
+}
+
+package "🚨 Alertas" {
+  [📧 Email Alerts] as EmailAlert
+  [📝 Log-based Alerts] as LogAlert
+  [💿 Disk Space Alerts] as DiskAlert
+  [⚙️ Service Down Alerts] as ServiceAlert
+}
+
+NginxLogs --> HealthCheck
+RailsLogs --> LogAnalysis
+SystemLogs --> BackupCheck
+PxPlusLogs --> SecurityScan
+
+HealthCheck --> EmailAlert
+LogAnalysis --> LogAlert
+BackupCheck --> DiskAlert
+SecurityScan --> ServiceAlert
+
+@enduml
 ```
 
 ## Estructura de Directorios en Servidor
 
-```mermaid
-graph TD
-    Root[🖥️ Ubuntu Server] --> Home[📁 /home/]
-    Home --> Deploy[👤 /home/deploy/]
-    
-    Deploy --> App[💎 pxplus_app/]
-    Deploy --> Scripts[📜 scripts/]
-    Deploy --> Backups[💾 backups/]
-    Deploy --> Logs[📝 logs/]
-    
-    App --> AppCode[📄 app/]
-    App --> Config[⚙️ config/]
-    App --> Public[🌐 public/]
-    App --> TmpDir[📁 tmp/]
-    
-    Scripts --> DeployScript[🚀 deploy.sh]
-    Scripts --> BackupScript[💾 backup.sh]
-    Scripts --> CleanupScript[🧹 cleanup.sh]
-    Scripts --> HealthScript[🏥 health_check.sh]
-    
-    Root --> TmpRoot[📁 /tmp/]
-    TmpRoot --> PxPlusExchange[🔄 pxplus_exchange/]
-    PxPlusExchange --> Input[📥 input/]
-    PxPlusExchange --> Output[📤 output/]
-    PxPlusExchange --> Archive[📦 archive/]
-    
-    Root --> EtcDir[⚙️ /etc/]
-    EtcDir --> NginxDir[🌐 nginx/]
-    EtcDir --> SystemdDir[⚙️ systemd/]
-    NginxDir --> SitesAvailable[📋 sites-available/]
-    SystemdDir --> SystemFiles[📄 system/]
+```plantuml
+@startuml
+title Estructura de Directorios en Servidor
+
+folder "🖥️ Ubuntu Server" {
+  folder "📁 /home/" {
+    folder "👤 /home/deploy/" {
+      folder "💎 pxplus_app/" {
+        folder "📄 app/"
+        folder "⚙️ config/"
+        folder "🌐 public/"
+        folder "📁 tmp/"
+      }
+      folder "📜 scripts/" {
+        file "🚀 deploy.sh"
+        file "💾 backup.sh"
+        file "🧹 cleanup.sh"
+        file "🏥 health_check.sh"
+      }
+      folder "💾 backups/"
+      folder "📝 logs/"
+    }
+  }
+  
+  folder "📁 /tmp/" {
+    folder "🔄 pxplus_exchange/" {
+      folder "📥 input/"
+      folder "📤 output/"
+      folder "📦 archive/"
+    }
+  }
+  
+  folder "⚙️ /etc/" {
+    folder "🌐 nginx/" {
+      folder "📋 sites-available/"
+    }
+    folder "⚙️ systemd/" {
+      folder "📄 system/"
+    }
+  }
+}
+
+@enduml
 ```
 
 ## Backup y Recovery Strategy
 
-```mermaid
-flowchart TD
-    subgraph BackupTypes["💾 Backup Types"]
-        CodeBackup[💻 Code Backup<br/>Application files]
-        ConfigBackup[⚙️ Config Backup<br/>System configuration]
-        FileBackup[📄 PxPlus Files<br/>Exchange files]
-        LogBackup[📝 Log Backup<br/>Application logs]
-    end
-    
-    subgraph Schedule["📅 Backup Schedule"]
-        Daily[📅 Daily<br/>2:00 AM]
-        Weekly[📅 Weekly<br/>Sunday 1:00 AM]
-        Monthly[📅 Monthly<br/>1st day 0:00 AM]
-    end
-    
-    subgraph Storage["💽 Storage"]
-        LocalStorage[🖥️ Local Storage<br/>/home/deploy/backups/]
-        RemoteStorage[☁️ Remote Storage<br/>Optional cloud backup]
-    end
-    
-    subgraph Recovery["🔧 Recovery Process"]
-        StopServices[⏹️ Stop Services]
-        RestoreFiles[📁 Restore Files]
-        UpdatePermissions[🔐 Update Permissions]
-        StartServices[▶️ Start Services]
-        VerifyHealth[✅ Verify Health]
-    end
-    
-    CodeBackup --> Daily
-    ConfigBackup --> Weekly
-    FileBackup --> Daily
-    LogBackup --> Monthly
-    
-    Daily --> LocalStorage
-    Weekly --> LocalStorage
-    Monthly --> RemoteStorage
-    
-    LocalStorage --> StopServices
-    StopServices --> RestoreFiles
-    RestoreFiles --> UpdatePermissions
-    UpdatePermissions --> StartServices
-    StartServices --> VerifyHealth
+```plantuml
+@startuml
+title Backup y Recovery Strategy
+
+package "💾 Backup Types" {
+  [💻 Code Backup\nApplication files] as CodeBackup
+  [⚙️ Config Backup\nSystem configuration] as ConfigBackup
+  [📄 PxPlus Files\nExchange files] as FileBackup
+  [📝 Log Backup\nApplication logs] as LogBackup
+}
+
+package "📅 Backup Schedule" {
+  [📅 Daily\n2:00 AM] as Daily
+  [📅 Weekly\nSunday 1:00 AM] as Weekly
+  [📅 Monthly\n1st day 0:00 AM] as Monthly
+}
+
+package "💽 Storage" {
+  [🖥️ Local Storage\n/home/deploy/backups/] as LocalStorage
+  [☁️ Remote Storage\nOptional cloud backup] as RemoteStorage
+}
+
+package "🔧 Recovery Process" {
+  [⏹️ Stop Services] as StopServices
+  [📁 Restore Files] as RestoreFiles
+  [🔐 Update Permissions] as UpdatePermissions
+  [▶️ Start Services] as StartServices
+  [✅ Verify Health] as VerifyHealth
+}
+
+CodeBackup --> Daily
+ConfigBackup --> Weekly
+FileBackup --> Daily
+LogBackup --> Monthly
+
+Daily --> LocalStorage
+Weekly --> LocalStorage
+Monthly --> RemoteStorage
+
+LocalStorage --> StopServices
+StopServices --> RestoreFiles
+RestoreFiles --> UpdatePermissions
+UpdatePermissions --> StartServices
+StartServices --> VerifyHealth
+
+@enduml
 ```
