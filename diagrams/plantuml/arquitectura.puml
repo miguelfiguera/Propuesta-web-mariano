@@ -1,0 +1,16 @@
+@startuml
+!theme plain
+
+rectangle "Frontend\nReact + Inertia.js" as frontend
+rectangle "Backend\nRails + Inertia.js" as backend  
+rectangle "PxPlus 7.71\nCommand Execution" as pxplus
+rectangle "Nginx\nReverse Proxy" as nginx
+rectangle "File System\n(.txt files)" as files
+
+frontend <--> backend
+backend <--> pxplus
+frontend --> nginx
+nginx --> backend
+pxplus <--> files
+
+@enduml

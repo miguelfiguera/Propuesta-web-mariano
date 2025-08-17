@@ -44,23 +44,11 @@ El presente documento describe la propuesta integral para el desarrollo de una a
 
 ### Diagrama de Arquitectura
 
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Frontend      │    │   Backend       │    │   PxPlus 7.71   │
-│   React +       │◄──►│   Rails API +   │◄──►│   Command       │
-│   Inertia.js    │    │   Inertia.js    │    │   Execution     │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         │                       │                       │
-         │              ┌─────────────────┐              │
-         │              │   Nginx         │              │
-         └──────────────►│   Reverse Proxy │              │
-                        └─────────────────┘              │
-                                 │                       │
-                        ┌─────────────────┐              │
-                        │   File System   │◄─────────────┘
-                        │   (.txt files)  │
-                        └─────────────────┘
-```
+![Arquitectura](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/chepino/PropuestaMariano/main/diagrams/plantuml/arquitectura.puml)
+
+> **📁 Diagramas disponibles:**
+> - **PlantUML:** [`diagrams/plantuml/`](./diagrams/plantuml/) - Renderizados automáticamente con proxy
+> - **Mermaid:** [`diagrams/mermaid/`](./diagrams/mermaid/) - Renderizados nativamente en GitHub
 
 ### Flujo de Comunicación
 

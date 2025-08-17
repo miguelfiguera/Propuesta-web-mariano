@@ -1,0 +1,23 @@
+@startuml
+!theme plain
+
+actor Usuario
+participant "Frontend\nReact" as frontend
+participant "Rails\nController" as controller
+participant "Action" as action
+participant "Command\nExecutor" as executor
+participant "PxPlus" as pxplus
+participant "Response\nParser" as parser
+
+Usuario -> frontend: Envía petición
+frontend -> controller: Inertia.js request
+controller -> action: Delega operación
+action -> executor: Genera archivo .txt
+executor -> pxplus: Ejecuta comando
+pxplus -> executor: Respuesta .txt
+executor -> parser: Convierte a JSON
+parser -> controller: JSON estructurado
+controller -> frontend: Inertia.js response
+frontend -> Usuario: Renderiza resultado
+
+@enduml

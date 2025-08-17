@@ -1,0 +1,24 @@
+@startuml
+!theme plain
+
+project starts the 2024-01-01
+
+[Fase 1: Setup y Fundación] lasts 3 weeks
+[Configuración entorno] starts at [Fase 1: Setup y Fundación]'s start and lasts 1 week
+[Setup Rails + React] starts after [Configuración entorno]'s end and lasts 1 week
+[Autenticación básica] starts after [Setup Rails + React]'s end and lasts 1 week
+
+[Fase 2: Core Functionality] starts after [Fase 1: Setup y Fundación]'s end and lasts 5 weeks
+[Gestión de pagos] starts at [Fase 2: Core Functionality]'s start and lasts 2 weeks
+[Sistema consultas] starts after [Gestión de pagos]'s end and lasts 2 weeks
+[Testing integración] starts after [Sistema consultas]'s end and lasts 1 week
+
+[Fase 3: Reportes y UI/UX] starts after [Fase 2: Core Functionality]'s end and lasts 4 weeks
+[Sistema reportes] starts at [Fase 3: Reportes y UI/UX]'s start and lasts 2 weeks
+[Refinamiento UI] starts after [Sistema reportes]'s end and lasts 2 weeks
+
+[Fase 4: Deployment] starts after [Fase 3: Reportes y UI/UX]'s end and lasts 2 weeks
+[Setup servidor] starts at [Fase 4: Deployment]'s start and lasts 1 week
+[Deployment final] starts after [Setup servidor]'s end and lasts 1 week
+
+@enduml
